@@ -2,20 +2,24 @@
 
 namespace App\Models;
 
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
         'name',
         'email',
         'password',
         'role',
-        'pharmacy_id',
+        'profile_image',
+        'email_verified_at',
+        'remember_token',
     ];
 
     protected $hidden = [
@@ -23,8 +27,13 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    public function pharmacy()
+    public function isAdmin(): bool
     {
-        return $this->belongsTo(Pharmacy::class);
+        return $this->role === 'admin';
+    }
+
+    public function enrollments(): HasMany
+    {
+        return $this->hasMany(Enrollment::class);
     }
 }
